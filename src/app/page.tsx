@@ -50,7 +50,7 @@ const PixelChar = ({ size=4, animate=false, flip=false }) => {
 };
 
 /* ═══ 5 UNIQUE ENEMY SPRITES ═══ */
-const ENEMY_DATA = [
+const ENEMY_DATA: { W: number; rows: string[]; pal: Record<string, string> }[] = [
   { // 1: バグスライム - ぷるぷるスライム
     W:14, rows:[
       "....1GGGG1....",
@@ -366,23 +366,23 @@ export default function ClaudeCodeQuest() {
   const [enemyHurt,setEnemyHurt]=useState(false);
   const [attackAnim,setAttackAnim]=useState(false);
   const [showDamage,setShowDamage]=useState(false);
-  const [cleared,setCleared]=useState([]);
+  const [cleared,setCleared]=useState<number[]>([]);
   const inputRef=useRef<HTMLInputElement>(null);
   const termRef=useRef<HTMLDivElement>(null);
   const typingRef=useRef<ReturnType<typeof setInterval>|null>(null);
 
   const stage=STAGES[stageIdx]; const step=stage?.steps?.[stepIdx]; const level=getLevel(xp);
-  const isUnlocked=i=>i===0||cleared.includes(i-1); // unlocked if previous stage cleared
+  const isUnlocked=(i: number)=>i===0||cleared.includes(i-1); // unlocked if previous stage cleared
 
   useEffect(()=>{try{const r=localStorage.getItem("ccq_save");if(r){const d=JSON.parse(r);if(d.xp)setXp(d.xp);if(d.cl)setCleared(d.cl);}}catch{}},[]);
-  const saveProgress=(nxp: number,ncl?)=>{const c=ncl||cleared;try{localStorage.setItem("ccq_save",JSON.stringify({xp:nxp,cl:c}));}catch{}};
+  const saveProgress=(nxp: number,ncl?: number[])=>{const c=ncl||cleared;try{localStorage.setItem("ccq_save",JSON.stringify({xp:nxp,cl:c}));}catch{}};
   const scrollTerm=()=>{setTimeout(()=>{if(termRef.current)termRef.current.scrollTop=termRef.current.scrollHeight;},50);};
 
-  const typeText=useCallback((text,cb)=>{
+  const typeText=useCallback((text: string,cb?: ()=>void)=>{
     if(typingRef.current)clearInterval(typingRef.current);
     setIsTyping(true);setDisplayedText("");let i=0;
     typingRef.current=setInterval(()=>{i++;setDisplayedText(text.slice(0,i));
-      if(i>=text.length){clearInterval(typingRef.current);typingRef.current=null;setIsTyping(false);if(cb)cb();}
+      if(i>=text.length){clearInterval(typingRef.current!);typingRef.current=null;setIsTyping(false);if(cb)cb();}
     },28);
   },[]);
 
@@ -413,7 +413,7 @@ export default function ClaudeCodeQuest() {
         system:"あなたはClaude Codeというターミナルベースの開発ツールです。Webディレクター向けに、わかりやすく簡潔に日本語で回答してください。技術用語には簡単な説明を添えてください。回答は5行以内で簡潔に。回答の冒頭に絵文字を1つ付けてください。",
         messages:[{role:"user",content:query}]})});
       const data=await res.json();const text=data.content?.map((c: {text?:string})=>c.text||"").join("")||"応答を取得できませんでした";
-      addTL(text.split("\n").map(l=>({type:"ai",text:l})));
+      addTL(text.split("\n").map((l: string)=>({type:"ai",text:l})));
     }catch{addTL([{type:"ai",text:"📁 プロジェクト構造を分析しました。\n  /src - ソースコード\n  /tests - テストファイル\n  /docs - ドキュメント"}]);}
     setAiLoading(false);
   };
