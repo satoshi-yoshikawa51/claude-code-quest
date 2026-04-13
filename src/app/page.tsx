@@ -1,6 +1,5 @@
 "use client";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { track } from '@vercel/analytics';
 
 /* ═══════════════════════════════════════════
    PIXEL ART CHARACTERS (HD-2D style)
@@ -433,7 +432,7 @@ export default function ClaudeCodeQuest() {
       }else{addTL(step.response as {type:string;text:string}[]);}
       await playAttack(step.damage||1);setCompanionMsg(step.companion);proceedStep();
     }else{
-      track('command_fail', { stage_id: stage.id, step: stepIdx + 1, input: cmd.slice(0, 50) });
+      window.gtag('event', 'command_fail', { stage_id: stage.id, step: stepIdx + 1, input: cmd.slice(0, 50) });
       setFailedAttempts(p=>[...p,cmd]);
       const cb=cmd.split(" ")[0],eb=step.expect.split(" ")[0];
       const err=cmd.toLowerCase()===step.expect.toLowerCase()&&cmd!==step.expect?`zsh: 大文字小文字が違うようです: ${cb}`:cb===eb?"エラー: オプションまたは引数が正しくありません":cmd.includes(eb)||step.expect.includes(cb)?`zsh: コマンドの形式が違います: ${cmd}`:`zsh: command not found: ${cb}`;
@@ -465,15 +464,15 @@ export default function ClaudeCodeQuest() {
   };
 
   const proceedStep=()=>{setFailedAttempts([]);
-    if(stepIdx<stage.steps.length-1){setStepIdx(stepIdx+1);track('step_reach', { stage_id: stage.id, step: stepIdx + 1 });}
+    if(stepIdx<stage.steps.length-1){setStepIdx(stepIdx+1);window.gtag('event', 'step_reach', { stage_id: stage.id, step: stepIdx + 1 });}
     else{setTimeout(()=>{const rw=stage.xpReward,nx=xp+rw,ol=getLevel(xp),nl=getLevel(nx);
       const ncl=cleared.includes(stageIdx)?cleared:[...cleared,stageIdx];
-      track('stage_clear', { stage_id: stage.id, stage_title: stage.title });
+      window.gtag('event', 'stage_clear', { stage_id: stage.id, stage_title: stage.title });
       setCleared(ncl);setGainedXp(rw);setLeveledUp(nl>ol);setXp(nx);saveProgress(nx,ncl);setScreen("clear");},1200);}
   };
 
   const requestHint=async()=>{
-    if(!step)return;track('hint_used', { stage_id: stage.id, step: stepIdx + 1 });setAiLoading(true);
+    if(!step)return;window.gtag('event', 'hint_used', { stage_id: stage.id, step: stepIdx + 1 });setAiLoading(true);
     try{const hf=failedAttempts.length>0,fh=hf?failedAttempts.slice(-5).map((f,i)=>`${i+1}回目: "${f}"`).join("\n"):"まだ入力していません",fc=failedAttempts.length;
       const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,
@@ -494,7 +493,7 @@ export default function ClaudeCodeQuest() {
   };
 
   const startStage=(idx: number)=>{if(!isUnlocked(idx))return;
-    track('stage_start', { stage_id: STAGES[idx].id, stage_title: STAGES[idx].title });
+    window.gtag('event', 'stage_start', { stage_id: STAGES[idx].id, stage_title: STAGES[idx].title });
     setStageIdx(idx);setStepIdx(0);setDialogIdx(0);setTermHistory([]);
     setInput("");setCompanionMsg("");setFailedAttempts([]);setScreen("story");};
 
