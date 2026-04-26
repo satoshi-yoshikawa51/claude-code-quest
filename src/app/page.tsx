@@ -506,7 +506,9 @@ export default function ClaudeCodeQuest() {
      RENDER: TITLE
      ═════════════════════════════════════ */
   if(screen==="title") return (
-    <div style={S.root}><style>{CSS}</style>
+    <div style={{...S.root, overflowY:"auto"}}><style>{CSS}</style>
+
+      {/* ── Hero section ── */}
       <div style={S.titleWrap}>
         <div style={S.bgFar}/><div style={S.bgMid}/><div style={S.bgNear}/>
         <div style={S.groundBase}/>
@@ -518,27 +520,90 @@ export default function ClaudeCodeQuest() {
           <div style={S.titleBadge}>⚔ AI RPG Learning Game ⚔</div>
           <h1 style={S.titleLogo}><span style={S.titleC}>Claude Code</span><span style={S.titleQ}>Quest</span></h1>
           <p style={S.titleSub}>─ Webディレクターが挑む、AI開発の冒険 ─</p>
-          {xp>0&&<div style={S.saveInfo}>Lv.{level} / {xp} XP</div>}
-          {/* Stage Select Map */}
-          <div style={S.stgMap}>
-            {STAGES.map((s,i)=>{
-              const unlocked=isUnlocked(i), done=cleared.includes(i);
-              return (
-                <button key={s.id} style={{...S.stgItem,...(done?S.stgDone:unlocked?S.stgOpen:S.stgLock)}}
-                  onClick={()=>unlocked&&startStage(i)} disabled={!unlocked}>
-                  <span style={S.stgId}>{done?"✓":unlocked?s.id:"🔒"}</span>
-                  <span style={S.stgInfo}>
-                    <span style={S.stgName}>{s.title}</span>
-                    <span style={S.stgDesc}>{unlocked?s.subtitle:"前のステージをクリアしよう"}</span>
-                  </span>
-                  <span style={S.stgXp}>{unlocked?`${s.xpReward}XP`:""}</span>
-                </button>
-              );
-            })}
+
+          {/* Value prop */}
+          <div style={S.valueProp}>
+            <p style={S.valuePropMain}>AIコーディングツール「Claude Code」を、<br/>ブラウザで遊びながら学ぶRPG。</p>
+            <p style={S.valuePropSub}>非エンジニア向け / 所要約30分 / 全5ステージ</p>
           </div>
+
+          {/* Trust badges */}
+          <div style={S.trustRow}>
+            <span style={S.trustBadge}>✓ 完全無料</span>
+            <span style={S.trustBadge}>✓ 登録不要</span>
+            <span style={S.trustBadge}>✓ ブラウザだけでOK</span>
+          </div>
+
+          {/* CTA */}
+          <button style={S.ctaBtn} onClick={()=>{
+            window.gtag('event','cta_click',{stage_id:1});
+            startStage(0);
+          }}>▶ Stage 1 から冒険を始める</button>
+          <p style={S.ctaSub}>最初のステージは5〜10分でクリアできます</p>
+
+          {xp>0&&<div style={S.saveInfo}>Lv.{level} / {xp} XP</div>}
         </div>
         <div style={S.letterT}/><div style={S.letterB}/>
       </div>
+
+      {/* ── Terminal preview ── */}
+      <div style={S.lpSection}>
+        <div style={S.termPreviewWrap}>
+          <div style={S.tH}>
+            <span style={{...S.tDot,background:"#FF5F57"}}/><span style={{...S.tDot,background:"#FFBD2E"}}/><span style={{...S.tDot,background:"#28C840"}}/>
+            <span style={S.tLb}>Terminal — プレイ画面プレビュー</span>
+          </div>
+          <div style={S.termPreviewBody}>
+            <div style={{...S.tLn,...S.tI}}><span style={{color:"#68D888"}}>$</span> claude --version</div>
+            <div style={{...S.tLn,...S.tS}}>Claude Code v1.0.0</div>
+            <div style={{...S.tLn,color:"#9AB"}}>AI-Powered Development Tool</div>
+            <div style={{...S.tLn,...S.tI,marginTop:"6px"}}><span style={{color:"#68D888"}}>$</span> claude &quot;プロジェクトの構成を教えて&quot;</div>
+            <div style={{...S.tLn,...S.tA}}>📁 /src ソースコード / /tests テスト / /docs ドキュメント</div>
+            <div style={{...S.tLn,color:"#F0D878",marginTop:"6px"}}>★ Stage Clear! +120 XP</div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Skills 2x2 ── */}
+      <div style={S.lpSection}>
+        <h2 style={S.lpSectionTitle}>クリア後にできること</h2>
+        <div style={S.skillsGrid}>
+          {([
+            {n:"Skill 01",t:"Claude Codeの基本操作"},
+            {n:"Skill 02",t:"プロジェクト分析の指示出し"},
+            {n:"Skill 03",t:"バグ調査・コードレビュー活用"},
+            {n:"Skill 04",t:"CLAUDE.mdでチーム展開"},
+          ] as {n:string;t:string}[]).map(sk=>(
+            <div key={sk.n} style={S.skillCard}>
+              <span style={S.skillNum}>{sk.n}</span>
+              <span style={S.skillText}>{sk.t}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Stage roadmap (horizontal) ── */}
+      <div style={{...S.lpSection,paddingBottom:"32px"}}>
+        <h2 style={S.lpSectionTitle}>ステージロードマップ</h2>
+        <div style={S.stageFlow}>
+          {STAGES.map((s,i)=>{
+            const done=cleared.includes(i), active=i===0&&!done;
+            return (
+              <div key={s.id} style={{display:"flex",alignItems:"center",gap:"6px"}}>
+                <button
+                  style={{...S.stageFlowItem,...(done?S.stageFlowDone:active?S.stageFlowActive:S.stageFlowLocked)}}
+                  onClick={()=>isUnlocked(i)&&startStage(i)}
+                  disabled={!isUnlocked(i)}>
+                  <span style={S.stageFlowNum}>Stage {s.id}</span>
+                  <span style={S.stageFlowName}>{s.title}</span>
+                </button>
+                {i<STAGES.length-1&&<span style={S.stageArrow}>→</span>}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
     </div>
   );
 
@@ -896,4 +961,56 @@ const S: Record<string, React.CSSProperties> = {
   pr:{color:"#68D888",fontWeight:700,userSelect:"none"},
   iF:{flex:1,background:"transparent",border:"none",outline:"none",color:"#D8E0E8",
     fontFamily:F.mono,fontSize:"12px",caretColor:"#68D888"},
+
+  /* ══ LP V2 ══ */
+  valueProp:{margin:"12px 0 10px",padding:"12px 18px",
+    background:"rgba(20,15,5,0.55)",border:"1px solid rgba(200,180,100,0.15)",borderRadius:"6px",
+    backdropFilter:"blur(4px)"},
+  valuePropMain:{fontFamily:F.rpg,fontSize:"clamp(13px,2.5vw,16px)",color:"#FFF8E8",lineHeight:1.7,
+    textShadow:"0 1px 3px rgba(0,0,0,0.5)",marginBottom:"4px"},
+  valuePropSub:{fontSize:"12px",color:"#C0B890",fontFamily:F.rpg},
+
+  trustRow:{display:"flex",gap:"8px",justifyContent:"center",flexWrap:"wrap" as const,margin:"8px 0 12px"},
+  trustBadge:{fontSize:"11px",fontFamily:F.rpg,color:"#A8E6A0",padding:"5px 14px",
+    background:"rgba(60,140,60,0.18)",border:"1px solid rgba(100,200,100,0.3)",borderRadius:"20px"},
+
+  ctaBtn:{display:"block",width:"100%",maxWidth:"340px",margin:"0 auto",padding:"16px 32px",
+    fontSize:"15px",fontFamily:F.rpg,color:"#FFF8E8",cursor:"pointer",
+    background:"linear-gradient(180deg,#7755CC 0%,#5533AA 100%)",
+    border:"2px solid #9977EE",borderRadius:"6px",
+    boxShadow:"0 4px 0 #3311AA, 0 6px 20px rgba(100,60,200,0.4), inset 0 1px 0 rgba(255,255,255,0.2)",
+    textShadow:"0 1px 2px rgba(0,0,0,0.4)"},
+  ctaSub:{fontSize:"11px",color:"#A898C8",fontFamily:F.rpg,textAlign:"center" as const,
+    marginTop:"6px",marginBottom:"8px"},
+
+  lpSection:{background:"linear-gradient(180deg,#0E1220,#0A0C18)",padding:"28px 20px",
+    borderTop:"1px solid rgba(255,255,255,0.05)"},
+  lpSectionTitle:{fontFamily:F.rpg,fontSize:"14px",color:"#F0D878",textAlign:"center" as const,
+    marginBottom:"16px",letterSpacing:"2px",
+    textShadow:"0 0 12px rgba(240,216,120,0.2)"},
+
+  termPreviewWrap:{maxWidth:"500px",margin:"0 auto",borderRadius:"8px",overflow:"hidden",
+    border:"1px solid rgba(255,255,255,0.08)",boxShadow:"0 4px 20px rgba(0,0,0,0.4)"},
+  termPreviewBody:{padding:"12px 16px",background:"#080C14",fontFamily:F.mono,fontSize:"12px",lineHeight:1.8},
+
+  skillsGrid:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",maxWidth:"500px",margin:"0 auto"},
+  skillCard:{padding:"12px 16px",background:"rgba(255,255,255,0.03)",
+    border:"1px solid rgba(200,180,100,0.12)",borderRadius:"6px",
+    display:"flex",flexDirection:"column" as const,gap:"4px"},
+  skillNum:{fontFamily:F.mono,fontSize:"10px",color:"#F0D878",fontWeight:700},
+  skillText:{fontFamily:F.rpg,fontSize:"12px",color:"#D0C8A8",lineHeight:1.5},
+
+  stageFlow:{display:"flex",alignItems:"center",flexWrap:"wrap" as const,
+    gap:"6px",justifyContent:"center",maxWidth:"600px",margin:"0 auto"},
+  stageFlowItem:{display:"flex",flexDirection:"column" as const,alignItems:"center",
+    gap:"2px",padding:"8px 12px",borderRadius:"6px",cursor:"pointer",
+    border:"2px solid transparent",background:"transparent",minWidth:"80px",
+    fontFamily:F.rpg,transition:"all .15s"},
+  stageFlowActive:{background:"rgba(119,85,204,0.25)",borderColor:"#9977EE",
+    boxShadow:"0 0 12px rgba(100,60,200,0.3)"},
+  stageFlowDone:{background:"rgba(80,140,60,0.2)",borderColor:"rgba(120,200,100,0.4)"},
+  stageFlowLocked:{opacity:0.35,cursor:"default"},
+  stageFlowNum:{fontSize:"9px",color:"#F0D878",fontFamily:F.mono,fontWeight:700},
+  stageFlowName:{fontSize:"10px",color:"#D0C8A8"},
+  stageArrow:{fontSize:"14px",color:"#5A5070",fontFamily:F.mono},
 };

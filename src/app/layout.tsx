@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from '@vercel/analytics/next';
 import { GoogleAnalytics } from '@next/third-parties/google';
+import Script from "next/script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -39,7 +40,14 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}<Analytics /><GoogleAnalytics gaId="G-K511LWCZF9" /></body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Analytics />
+        <GoogleAnalytics gaId="G-K511LWCZF9" />
+        <Script id="ga-app-version" strategy="afterInteractive" dangerouslySetInnerHTML={{
+          __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('set',{app_version:'${process.env.NEXT_PUBLIC_APP_VERSION||'v1'}'});`
+        }} />
+      </body>
     </html>
   );
 }
