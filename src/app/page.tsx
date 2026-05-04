@@ -213,17 +213,43 @@ const STAGES = [
     ],
     steps:[
       {briefing:"まずは claude コマンドを試してみよう",hint:"ターミナルに claude と入力してEnterを押そう",
-        expect:"claude",response:[{type:"error",text:"zsh: command not found: claude"},{type:"system",text:"💡 まだインストールされていないようだ..."}],
-        companion:"おっと、まだインストールされていないみたいだね。\nまずはnpmでインストールしよう！",damage:1},
+        expect:"claude",targetCommand:"claude",
+        response:[{type:"error",text:"zsh: command not found: claude"},{type:"system",text:"💡 まだインストールされていないようだ..."}],
+        companion:"おっと、まだインストールされていないみたいだね。\nまずはnpmでインストールしよう！",damage:1,
+        moves:[
+          {command:"claude",label:"起動",description:"Claude Code を起動する",primary:true},
+          {command:"claude --version",label:"バージョン確認",description:"インストール済みか確認"},
+          {command:"npm install -g @anthropic-ai/claude-code",label:"インストール",description:"未導入ならまずこちら"},
+        ]},
       {briefing:"Claude Code をインストールしよう",hint:"npm install -g @anthropic-ai/claude-code と入力",
-        expect:"npm install -g @anthropic-ai/claude-code",response:[{type:"install",text:"📦 パッケージをダウンロード中..."}],
-        companion:"いいね！グローバルインストールだから\n-g オプションが必要だよ。",damage:1},
+        expect:"npm install -g @anthropic-ai/claude-code",
+        targetCommand:"npm install -g @anthropic-ai/claude-code",shortLabel:"npm install -g @anthropic-ai/claude-code",
+        response:[{type:"install",text:"📦 パッケージをダウンロード中..."}],
+        companion:"いいね！グローバルインストールだから\n-g オプションが必要だよ。",damage:1,
+        moves:[
+          {command:"npm install -g @anthropic-ai/claude-code",label:"グローバル導入",description:"どこからでも使える状態に",primary:true},
+          {command:"npm install @anthropic-ai/claude-code",label:"ローカル導入",description:"このプロジェクトのみ(今回はNG)"},
+          {command:"brew install claude-code",label:"Homebrew(参考)",description:"Macなら別経路もあり"},
+        ]},
       {briefing:"インストールできた！もう一度 claude を実行しよう",hint:"claude と入力してEnterを押そう",
-        expect:"claude",response:[{type:"success",text:"  ✦ Claude Code v1.0.0 ✦"},{type:"success",text:"  AI-Powered Development Tool"},{type:"system",text:"🎉 Claude Code が起動しました！"}],
-        companion:"やった！Claude Codeが動いたね！\nこれがAI開発の第一歩だ！",damage:1},
+        expect:"claude",targetCommand:"claude",
+        response:[{type:"success",text:"  ✦ Claude Code v1.0.0 ✦"},{type:"success",text:"  AI-Powered Development Tool"},{type:"system",text:"🎉 Claude Code が起動しました！"}],
+        companion:"やった！Claude Codeが動いたね！\nこれがAI開発の第一歩だ！",damage:1,
+        moves:[
+          {command:"claude",label:"起動",description:"Claude Code を起動",primary:true},
+          {command:"claude --help",label:"ヘルプ",description:"使い方の一覧を見る"},
+          {command:"claude --version",label:"バージョン確認",description:"動作チェック"},
+        ]},
       {briefing:"Claude Code に質問してみよう！\nclaude に続けて質問を入力しよう",hint:'claude "このプロジェクトの構成を教えて" のように入力',
-        expect:"claude ",matchType:"startsWith",response:"ai",
-        companion:"Claude Codeは自然言語で質問できるのが強み。\n日本語でもOKだよ！",damage:1},
+        expect:"claude ",matchType:"startsWith",
+        targetCommand:'claude "このプロジェクトの構成を教えて"',shortLabel:'claude "..."',
+        response:"ai",
+        companion:"Claude Codeは自然言語で質問できるのが強み。\n日本語でもOKだよ！",damage:1,
+        moves:[
+          {command:'claude "このプロジェクトの構成を教えて"',label:"質問する",description:"自然言語でOK",primary:true},
+          {command:'claude "READMEを読んで"',label:"別の質問例",description:"用途は同じ"},
+          {command:"claude --help",label:"ヘルプ",description:"今回は質問が目的なので外れ"},
+        ]},
     ],
   },
   {
@@ -239,18 +265,43 @@ const STAGES = [
     steps:[
       {briefing:"プロジェクトフォルダに移動しよう",hint:"cd project と入力してフォルダに移動",
         expect:"cd project",matchType:"startsWith",
+        targetCommand:"cd project",
         response:[{type:"success",text:"~/project"},{type:"system",text:"📂 プロジェクトフォルダに移動しました"}],
-        companion:"まずは作業フォルダに移動だね！\ncdはchange directoryの略だよ。",damage:1},
+        companion:"まずは作業フォルダに移動だね！\ncdはchange directoryの略だよ。",damage:1,
+        moves:[
+          {command:"cd project",label:"移動",description:"projectフォルダへ入る",primary:true},
+          {command:"ls project",label:"中身を見る",description:"移動せずに一覧表示"},
+          {command:"pwd",label:"現在地確認",description:"今いる場所を表示"},
+        ]},
       {briefing:"Claude Code を起動しよう",hint:"claude と入力して起動しよう",
-        expect:"claude",
+        expect:"claude",targetCommand:"claude",
         response:[{type:"success",text:"  ✦ Claude Code v1.0.0 ✦"},{type:"system",text:"📁 /project を認識（42ファイル）"}],
-        companion:"起動するとフォルダ内のファイルを\n自動で認識してくれるんだ！",damage:1},
+        companion:"起動するとフォルダ内のファイルを\n自動で認識してくれるんだ！",damage:1,
+        moves:[
+          {command:"claude",label:"起動",description:"フォルダ内ファイルを認識",primary:true},
+          {command:"ls",label:"中身一覧",description:"起動前に確認するだけ"},
+          {command:"cd ..",label:"親へ戻る",description:"違うフォルダで起動?"},
+        ]},
       {briefing:"プロジェクトの構成を聞いてみよう",hint:'claude "このプロジェクトの全体構成を教えて"',
-        expect:"claude ",matchType:"startsWith",response:"ai",
-        companion:"自然言語で質問するだけで\nコード全体を分析してくれるよ！",damage:1},
+        expect:"claude ",matchType:"startsWith",
+        targetCommand:'claude "このプロジェクトの全体構成を教えて"',shortLabel:'claude "..."',
+        response:"ai",
+        companion:"自然言語で質問するだけで\nコード全体を分析してくれるよ！",damage:1,
+        moves:[
+          {command:'claude "このプロジェクトの全体構成を教えて"',label:"全体把握",description:"構成を質問する",primary:true},
+          {command:'claude "主要なファイルを教えて"',label:"重要ファイル",description:"範囲を絞って聞く"},
+          {command:"cat README.md",label:"READMEを読む",description:"既存があるか確認"},
+        ]},
       {briefing:"READMEを自動生成してもらおう",hint:'claude "README.mdを作成して"',
-        expect:"claude ",matchType:"startsWith",response:"ai",
-        companion:"ファイル生成もお手のもの！\nディレクターが指示するだけでAIが書いてくれる。",damage:2},
+        expect:"claude ",matchType:"startsWith",
+        targetCommand:'claude "README.mdを作成して"',shortLabel:'claude "..."',
+        response:"ai",
+        companion:"ファイル生成もお手のもの！\nディレクターが指示するだけでAIが書いてくれる。",damage:2,
+        moves:[
+          {command:'claude "README.mdを作成して"',label:"README自動生成",description:"AIに作らせる",primary:true},
+          {command:'claude "コードのコメントを書いて"',label:"別ドキュメント",description:"用途違い"},
+          {command:"touch README.md",label:"空ファイル作成",description:"中身は自分で書く?"},
+        ]},
     ],
   },
   {
@@ -265,19 +316,43 @@ const STAGES = [
     ],
     steps:[
       {briefing:"最近の変更を確認しよう",hint:"git log --oneline で直近のコミットを確認",
-        expect:"git log --oneline",
+        expect:"git log --oneline",targetCommand:"git log --oneline",
         response:[{type:"success",text:"a1b2c3d 決済APIのエンドポイント変更"},{type:"success",text:"e4f5g6h ヘッダーデザイン修正"},{type:"success",text:"i7j8k9l テスト追加"}],
-        companion:"git logでコミット履歴が見えるね。\n一番上の「決済API」が怪しい！",damage:1},
+        companion:"git logでコミット履歴が見えるね。\n一番上の「決済API」が怪しい！",damage:1,
+        moves:[
+          {command:"git log --oneline",label:"履歴一覧",description:"1行で見やすく",primary:true},
+          {command:"git log",label:"詳細履歴",description:"フル表示(情報量過多)"},
+          {command:"git status",label:"差分の状態",description:"履歴ではなく今の状態"},
+        ]},
       {briefing:"怪しいコミットの差分を確認しよう",hint:"git diff HEAD~1 で直前との差分を確認",
-        expect:"git diff HEAD~1",
+        expect:"git diff HEAD~1",targetCommand:"git diff HEAD~1",
         response:[{type:"error",text:"- const API_URL = '/api/v1/payment'"},{type:"success",text:"+ const API_URL = '/api/v2/payment'"},{type:"system",text:"📝 1ファイル変更、2行追加、2行削除"}],
-        companion:"APIのバージョンがv1→v2に\n変わってる！これが原因かも。",damage:1},
+        companion:"APIのバージョンがv1→v2に\n変わってる！これが原因かも。",damage:1,
+        moves:[
+          {command:"git diff HEAD~1",label:"1つ前との差分",description:"直近の変更を確認",primary:true},
+          {command:"git diff",label:"未コミット差分",description:"今は使わない"},
+          {command:"git show",label:"最新コミット詳細",description:"これでも近い情報"},
+        ]},
       {briefing:"Claude Codeにバグ原因を分析してもらおう",hint:'claude "この差分のバグ原因を分析して"',
-        expect:"claude ",matchType:"startsWith",response:"ai",
-        companion:"AIに差分を渡すだけで\n原因を分析してくれるんだ！",damage:1},
+        expect:"claude ",matchType:"startsWith",
+        targetCommand:'claude "この差分のバグ原因を分析して"',shortLabel:'claude "..."',
+        response:"ai",
+        companion:"AIに差分を渡すだけで\n原因を分析してくれるんだ！",damage:1,
+        moves:[
+          {command:'claude "この差分のバグ原因を分析して"',label:"原因分析",description:"AIに渡して特定",primary:true},
+          {command:'claude "コードレビューして"',label:"レビュー依頼",description:"用途違い"},
+          {command:"git blame",label:"誰が書いたか",description:"原因分析ではない"},
+        ]},
       {briefing:"修正方法を提案してもらおう",hint:'claude "修正方法を提案して"',
-        expect:"claude ",matchType:"startsWith",response:"ai",
-        companion:"原因→修正案までAIが出せる！\nディレクターでも障害対応できたね！",damage:2},
+        expect:"claude ",matchType:"startsWith",
+        targetCommand:'claude "修正方法を提案して"',shortLabel:'claude "..."',
+        response:"ai",
+        companion:"原因→修正案までAIが出せる！\nディレクターでも障害対応できたね！",damage:2,
+        moves:[
+          {command:'claude "修正方法を提案して"',label:"修正案",description:"AIに提案させる",primary:true},
+          {command:'claude "テストを書いて"',label:"テスト追加",description:"修正の後でやる"},
+          {command:"git revert HEAD",label:"元に戻す",description:"今は分析が先"},
+        ]},
     ],
   },
   {
@@ -292,19 +367,43 @@ const STAGES = [
     ],
     steps:[
       {briefing:"溜まっているPR一覧を確認しよう",hint:"gh pr list でプルリクエスト一覧を表示",
-        expect:"gh pr list",
+        expect:"gh pr list",targetCommand:"gh pr list",
         response:[{type:"success",text:"#142  feat: ユーザー認証改善  (open)"},{type:"success",text:"#138  fix: メモリリーク修正   (open)"},{type:"success",text:"#135  refactor: DB接続最適化 (open)"},{type:"system",text:"📋 3件のオープンPRがあります"}],
-        companion:"gh はGitHub CLIツール。\npr list でPR一覧が見えるよ！",damage:1},
+        companion:"gh はGitHub CLIツール。\npr list でPR一覧が見えるよ！",damage:1,
+        moves:[
+          {command:"gh pr list",label:"PR一覧",description:"溜まっているPRを確認",primary:true},
+          {command:"gh issue list",label:"Issue一覧",description:"PRではない"},
+          {command:"git branch",label:"ブランチ一覧",description:"PRとは別物"},
+        ]},
       {briefing:"最新PRの内容を確認しよう",hint:"gh pr view 142 でPRの詳細を確認",
-        expect:"gh pr view 142",
+        expect:"gh pr view 142",targetCommand:"gh pr view 142",
         response:[{type:"success",text:"feat: ユーザー認証改善"},{type:"success",text:"author: yamada (+324 -89)"},{type:"success",text:"8 files changed"},{type:"system",text:"📝 大規模な変更です…"}],
-        companion:"324行追加の大きなPR！\n手動レビューだと大変だけど…",damage:1},
+        companion:"324行追加の大きなPR！\n手動レビューだと大変だけど…",damage:1,
+        moves:[
+          {command:"gh pr view 142",label:"PR詳細",description:"#142 を表示",primary:true},
+          {command:"gh pr diff 142",label:"差分のみ",description:"中身詳細はviewで"},
+          {command:"gh pr checkout 142",label:"ローカル取得",description:"レビュー前に取り寄せる"},
+        ]},
       {briefing:"Claude Codeにレビューを依頼しよう",hint:'claude "PR #142をレビューして"',
-        expect:"claude ",matchType:"startsWith",response:"ai",
-        companion:"AIが自動でコードを読んで\n問題点を指摘してくれるよ！",damage:2},
+        expect:"claude ",matchType:"startsWith",
+        targetCommand:'claude "PR #142をレビューして"',shortLabel:'claude "..."',
+        response:"ai",
+        companion:"AIが自動でコードを読んで\n問題点を指摘してくれるよ！",damage:2,
+        moves:[
+          {command:'claude "PR #142をレビューして"',label:"AIレビュー",description:"一括チェック",primary:true},
+          {command:'claude "このコードを説明して"',label:"コード解説",description:"レビューではない"},
+          {command:"gh pr review 142 --approve",label:"即承認",description:"レビュー前に承認はNG"},
+        ]},
       {briefing:"セキュリティ観点でもチェックしよう",hint:'claude "セキュリティリスクを確認して"',
-        expect:"claude ",matchType:"startsWith",response:"ai",
-        companion:"セキュリティレビューも一瞬！\nレビュー品質と速度を両立できるね。",damage:2},
+        expect:"claude ",matchType:"startsWith",
+        targetCommand:'claude "セキュリティリスクを確認して"',shortLabel:'claude "..."',
+        response:"ai",
+        companion:"セキュリティレビューも一瞬！\nレビュー品質と速度を両立できるね。",damage:2,
+        moves:[
+          {command:'claude "セキュリティリスクを確認して"',label:"セキュリティ",description:"観点を絞ってチェック",primary:true},
+          {command:'claude "パフォーマンスを確認して"',label:"パフォーマンス",description:"別観点"},
+          {command:"npm audit",label:"依存の脆弱性",description:"コード自体ではない"},
+        ]},
     ],
   },
   {
@@ -319,18 +418,44 @@ const STAGES = [
     ],
     steps:[
       {briefing:"CLAUDE.md（プロジェクト設定ファイル）を作ろう",hint:"claude /init でプロジェクト設定を初期化",
-        expect:"claude /init",
+        expect:"claude /init",targetCommand:"claude /init",
         response:[{type:"success",text:"📄 CLAUDE.md を作成中..."},{type:"success",text:"✅ プロジェクト設定を生成しました"},{type:"system",text:"💡 このファイルにルールを書くとAIが従います"}],
-        companion:"CLAUDE.mdはAIへの指示書！\nプロジェクトのルールを書いておくと\n全メンバーに反映されるよ。",damage:1},
+        companion:"CLAUDE.mdはAIへの指示書！\nプロジェクトのルールを書いておくと\n全メンバーに反映されるよ。",damage:1,
+        moves:[
+          {command:"claude /init",label:"プロジェクト初期化",description:"CLAUDE.md を生成",primary:true},
+          {command:"git init",label:"Git初期化",description:"別物"},
+          {command:"npm init",label:"package.json生成",description:"別物"},
+        ]},
       {briefing:"コーディング規約を設定しよう",hint:'claude "CLAUDE.mdにTypeScriptの規約を追加して"',
-        expect:"claude ",matchType:"startsWith",response:"ai",
-        companion:"規約をAIに教えれば、\n生成コードが最初から規約準拠に！",damage:1},
+        expect:"claude ",matchType:"startsWith",
+        targetCommand:'claude "CLAUDE.mdにTypeScriptの規約を追加して"',shortLabel:'claude "..."',
+        response:"ai",
+        companion:"規約をAIに教えれば、\n生成コードが最初から規約準拠に！",damage:1,
+        moves:[
+          {command:'claude "CLAUDE.mdにTypeScriptの規約を追加して"',label:"規約追加",description:"AIに書かせる",primary:true},
+          {command:'claude "コードを書き直して"',label:"リファクタ",description:"規約定義ではない"},
+          {command:"vim CLAUDE.md",label:"手動編集",description:"今回はAIに頼む"},
+        ]},
       {briefing:"テストコードを自動生成してもらおう",hint:'claude "auth.tsのユニットテストを作成して"',
-        expect:"claude ",matchType:"startsWith",response:"ai",
-        companion:"テスト作成もAIにお任せ！\n仕様を伝えるだけでOK。",damage:2},
+        expect:"claude ",matchType:"startsWith",
+        targetCommand:'claude "auth.tsのユニットテストを作成して"',shortLabel:'claude "..."',
+        response:"ai",
+        companion:"テスト作成もAIにお任せ！\n仕様を伝えるだけでOK。",damage:2,
+        moves:[
+          {command:'claude "auth.tsのユニットテストを作成して"',label:"テスト生成",description:"対象ファイル指定",primary:true},
+          {command:'claude "auth.tsを説明して"',label:"解説",description:"テストではない"},
+          {command:"npm test",label:"テスト実行",description:"まだ無いので作る方が先"},
+        ]},
       {briefing:"チームへの導入提案書を作ろう",hint:'claude "Claude Code導入の提案書を作って"',
-        expect:"claude ",matchType:"startsWith",response:"ai",
-        companion:"提案書までAIが書いてくれる！\nこれであなたは真のAIディレクターだ！",damage:2},
+        expect:"claude ",matchType:"startsWith",
+        targetCommand:'claude "Claude Code導入の提案書を作って"',shortLabel:'claude "..."',
+        response:"ai",
+        companion:"提案書までAIが書いてくれる！\nこれであなたは真のAIディレクターだ！",damage:2,
+        moves:[
+          {command:'claude "Claude Code導入の提案書を作って"',label:"提案書作成",description:"導入推進ドキュメント",primary:true},
+          {command:'claude "ROIを計算して"',label:"投資対効果",description:"提案書の一部にもなる"},
+          {command:"git push",label:"送信",description:"提案書とは無関係"},
+        ]},
     ],
   },
 ];
@@ -367,9 +492,16 @@ export default function ClaudeCodeQuest() {
   const [attackAnim,setAttackAnim]=useState(false);
   const [showDamage,setShowDamage]=useState(false);
   const [cleared,setCleared]=useState<number[]>([]);
+  const [commandSource,setCommandSource]=useState<"card"|"manual">("manual");
   const inputRef=useRef<HTMLInputElement>(null);
   const termRef=useRef<HTMLDivElement>(null);
   const typingRef=useRef<ReturnType<typeof setInterval>|null>(null);
+
+  const tapMoveCard=(m:{command:string;label:string;description:string;primary?:boolean})=>{
+    setInput(m.command);setCommandSource("card");
+    inputRef.current?.focus();
+    window.gtag('event','move_card_tap',{stage_id:stage.id,step_id:stepIdx+1,command_picked:m.command.slice(0,100)});
+  };
 
   const stage=STAGES[stageIdx]; const step=stage?.steps?.[stepIdx]; const level=getLevel(xp);
   const isUnlocked=(i: number)=>i===0||cleared.includes(i-1); // unlocked if previous stage cleared
@@ -420,9 +552,11 @@ export default function ClaudeCodeQuest() {
 
   const handleCommand=async()=>{
     const cmd=input.trim();if(!cmd||!step)return;
+    const source=commandSource;setCommandSource("manual");
     addTL([{type:"input",text:`$ ${cmd}`}]);setInput("");
     const isMatch=step.matchType==="startsWith"?cmd.startsWith(step.expect):cmd===step.expect;
     if(isMatch){
+      window.gtag('event','command_success',{stage_id:stage.id,step_id:stepIdx+1,command:cmd.slice(0,100),source});
       if(step.response==="ai"){const q=cmd.replace(/^claude\s*/,"").replace(/^["']|["']$/g,"");await handleAiResponse(q||"このプロジェクトの構成を教えて");}
       else if((step.response as {type:string;text:string}[])[0]?.type==="install"){setInstalling(true);
         addTL([{type:"system",text:"📦 ダウンロード中..."}]);scrollTerm();await sleep(800);
@@ -432,7 +566,7 @@ export default function ClaudeCodeQuest() {
       }else{addTL(step.response as {type:string;text:string}[]);}
       await playAttack(step.damage||1);setCompanionMsg(step.companion);proceedStep();
     }else{
-      window.gtag('event', 'command_fail', { stage_id: stage.id, step: stepIdx + 1, input: cmd.slice(0, 50) });
+      window.gtag('event','command_fail',{stage_id:stage.id,step_id:stepIdx+1,attempted_command:cmd.slice(0,100)});
       setFailedAttempts(p=>[...p,cmd]);
       const cb=cmd.split(" ")[0],eb=step.expect.split(" ")[0];
       const err=cmd.toLowerCase()===step.expect.toLowerCase()&&cmd!==step.expect?`zsh: 大文字小文字が違うようです: ${cb}`:cb===eb?"エラー: オプションまたは引数が正しくありません":cmd.includes(eb)||step.expect.includes(cb)?`zsh: コマンドの形式が違います: ${cmd}`:`zsh: command not found: ${cb}`;
@@ -663,6 +797,11 @@ export default function ClaudeCodeQuest() {
             <div style={S.tipLbl}>📝 実務 TIPS</div>
             <p style={S.tipTxt}>{stage.clearTip||""}</p>
           </div>
+          <p style={S.simNote}>
+            ※ このゲームは Claude Code の操作シミュレーションです。実機で試すには{" "}
+            <a href="https://docs.claude.com/en/docs/claude-code/overview" target="_blank" rel="noopener noreferrer" style={S.simLink}>公式ドキュメント</a>
+            を参照してください。
+          </p>
         </div>
       </div>
     </div>
@@ -692,6 +831,12 @@ export default function ClaudeCodeQuest() {
           <div style={S.eArea}>
             <div style={S.eN}>{stage.enemyName}</div>
             <div style={S.hpW}><div style={S.hpO}><div style={{...S.hpI,width:`${hpPct}%`}}/></div><span style={S.hpL}>HP {enemyHp}/{enemyMaxHp}</span></div>
+            {step&&(step.shortLabel||step.targetCommand||step.expect)&&(
+              <div style={S.weakWrap}>
+                <div style={S.weakLabel}>{step.shortLabel||step.targetCommand||step.expect}</div>
+                <div style={S.weakArrow}/>
+              </div>
+            )}
             <EnemySprite stageIdx={stageIdx} size={4} hurt={enemyHurt}/>
             {showDamage&&<div style={S.dmg}>-{step?.damage||1}</div>}
           </div>
@@ -705,7 +850,24 @@ export default function ClaudeCodeQuest() {
 
         {/* ── Bottom UI ── */}
         <div style={S.botArea}>
-          <div style={S.mBar}><span style={{fontSize:"14px"}}>⚔</span><span style={S.mTxt}>{step?.briefing}</span><span style={S.mCnt}>{stepIdx+1}/{stage.steps.length}</span></div>
+          <div style={S.mBar}>
+            <span style={S.mCnt}>ミッション {stepIdx+1}/{stage.steps.length}</span>
+            <code style={S.mCmd}>{step?.targetCommand||step?.expect}</code>
+            <span style={S.mAction}>を入力してEnter</span>
+          </div>
+          {step?.moves&&step.moves.length>0&&(
+            <div style={S.movesRow}>
+              {step.moves.map((m,i)=>(
+                <button key={i} type="button"
+                  style={{...S.moveCard,...(m.primary?S.moveCardPrimary:S.moveCardDim)}}
+                  onClick={()=>tapMoveCard(m)}
+                  disabled={installing||aiLoading}>
+                  <code style={{...S.moveCmd,...(m.primary?S.moveCmdPrimary:{})}}>{m.command}</code>
+                  <span style={S.moveLabel}>{m.label} — {m.description}</span>
+                </button>
+              ))}
+            </div>
+          )}
           <div style={S.botCols}>
             {/* Companion */}
             <div style={S.cCol}>
@@ -721,7 +883,8 @@ export default function ClaudeCodeQuest() {
               <div style={S.tB} ref={termRef} onClick={()=>inputRef.current?.focus()}>
                 {termHistory.map((l,i)=>(<div key={i} style={{...S.tLn,...(l.type==="input"?S.tI:l.type==="error"?S.tE:l.type==="success"?S.tS:l.type==="ai"?S.tA:S.tW)}}>{l.text}</div>))}
                 {!installing&&!aiLoading&&(<div style={S.iR}><span style={S.pr}>$</span>
-                  <input ref={inputRef} style={S.iF} value={input} onChange={e=>setInput(e.target.value)}
+                  <input ref={inputRef} style={S.iF} value={input}
+                    onChange={e=>{setInput(e.target.value);setCommandSource("manual");}}
                     onKeyDown={e=>e.key==="Enter"&&handleCommand()} placeholder="コマンドを入力..." autoFocus
                     disabled={installing||aiLoading} spellCheck={false} autoComplete="off" autoCapitalize="off"/></div>)}
                 {(installing||aiLoading)&&<div style={S.tW}>● 処理中...</div>}
@@ -1013,4 +1176,42 @@ const S: Record<string, React.CSSProperties> = {
   stageFlowNum:{fontSize:"9px",color:"#F0D878",fontFamily:F.mono,fontWeight:700},
   stageFlowName:{fontSize:"10px",color:"#D0C8A8"},
   stageArrow:{fontSize:"14px",color:"#5A5070",fontFamily:F.mono},
+
+  /* ══ A: Weakness label (over enemy sprite) ══ */
+  weakWrap:{display:"flex",flexDirection:"column",alignItems:"center",margin:"4px auto 6px",position:"relative"},
+  weakLabel:{display:"inline-block",padding:"3px 8px",background:"#fac775",color:"#412402",
+    fontFamily:F.mono,fontSize:"11px",fontWeight:700,borderRadius:"3px",maxWidth:"180px",
+    overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
+    boxShadow:"0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3)",
+    border:"1px solid #c89538"},
+  weakArrow:{width:0,height:0,borderLeft:"5px solid transparent",borderRight:"5px solid transparent",
+    borderTop:"6px solid #fac775",marginTop:"-1px",
+    filter:"drop-shadow(0 1px 1px rgba(0,0,0,0.3))"},
+
+  /* ══ B: Mission bar (target command) ══ */
+  mCmd:{fontFamily:F.mono,fontSize:"12px",fontWeight:700,color:"#F0D878",
+    padding:"3px 8px",background:"rgba(0,0,0,0.35)",borderRadius:"3px",
+    border:"1px solid rgba(240,216,120,0.2)",overflow:"hidden",textOverflow:"ellipsis",
+    whiteSpace:"nowrap",maxWidth:"60%",flexShrink:1},
+  mAction:{fontFamily:F.ui,fontSize:"12px",color:"#A8B8C8",flexShrink:0},
+
+  /* ══ C: Move selection cards ══ */
+  movesRow:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px",padding:"8px 14px",
+    background:"rgba(255,255,255,0.015)",borderBottom:"1px solid rgba(255,255,255,0.04)"},
+  moveCard:{display:"flex",flexDirection:"column",alignItems:"flex-start",gap:"3px",
+    padding:"8px 10px",background:"rgba(255,255,255,0.04)",
+    border:"1px solid rgba(255,255,255,0.08)",borderRadius:"4px",cursor:"pointer",
+    textAlign:"left",fontFamily:F.ui,color:"#A8B8C8",transition:"all .15s",width:"100%"},
+  moveCardPrimary:{border:"1px solid #7B68EE",background:"rgba(123,104,238,0.1)",
+    boxShadow:"0 0 10px rgba(123,104,238,0.18)"},
+  moveCardDim:{opacity:0.55},
+  moveCmd:{fontFamily:F.mono,fontSize:"11px",color:"#D8E0E8",wordBreak:"break-all",
+    lineHeight:1.35,display:"block",width:"100%"},
+  moveCmdPrimary:{color:"#F0D878"},
+  moveLabel:{fontSize:"10px",color:"#8898A8",lineHeight:1.35},
+
+  /* ══ D: Simulation disclaimer (clear screen) ══ */
+  simNote:{marginTop:"12px",padding:"8px 14px",fontSize:"10px",color:"#6878A0",
+    textAlign:"center",fontFamily:F.ui,lineHeight:1.6,maxWidth:"400px"},
+  simLink:{color:"#9AA8D0",textDecoration:"underline"},
 };
