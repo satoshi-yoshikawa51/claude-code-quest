@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://claude-code-quest.vercel.app"),
+  metadataBase: new URL("https://claude-code-quest-v2.vercel.app"),
   title: "Claude Code Quest - AIディレクター育成RPG",
   description: "Webディレクターが冒険しながらClaude Codeを学ぶRPGゲーム。5分でCLI未経験からAIディレクターへ！",
   openGraph: {
