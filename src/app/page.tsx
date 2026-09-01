@@ -409,7 +409,7 @@ export default function ClaudeCodeQuest() {
   const handleAiResponse=async(query: string)=>{
     setAiLoading(true);addTL([{type:"system",text:"🤔 分析中..."}]);
     try{const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,
+      body:JSON.stringify({/* model・max_tokens はサーバ側(api/chat)で固定 */
         system:"あなたはClaude Codeというターミナルベースの開発ツールです。Webディレクター向けに、わかりやすく簡潔に日本語で回答してください。技術用語には簡単な説明を添えてください。回答は5行以内で簡潔に。回答の冒頭に絵文字を1つ付けてください。",
         messages:[{role:"user",content:query}]})});
       const data=await res.json();const text=data.content?.map((c: {text?:string})=>c.text||"").join("")||"応答を取得できませんでした";
@@ -445,7 +445,7 @@ export default function ClaudeCodeQuest() {
     setAiLoading(true);
     try{const af=[...failedAttempts,cmd],fh=af.slice(-5).map((f,i)=>`${i+1}回目: "${f}"`).join("\n");
       const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,
+        body:JSON.stringify({/* model・max_tokens はサーバ側(api/chat)で固定 */
           system:`あなたはRPGゲームの仲間キャラ「クロード」です。プレイヤーはWebディレクター（CLI初心者）です。
 プレイヤーが間違ったコマンドを入力しました。
 【ミッション】${cs.briefing}
@@ -475,7 +475,7 @@ export default function ClaudeCodeQuest() {
     if(!step)return;window.gtag('event', 'hint_used', { stage_id: stage.id, step: stepIdx + 1 });setAiLoading(true);
     try{const hf=failedAttempts.length>0,fh=hf?failedAttempts.slice(-5).map((f,i)=>`${i+1}回目: "${f}"`).join("\n"):"まだ入力していません",fc=failedAttempts.length;
       const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,
+        body:JSON.stringify({/* model・max_tokens はサーバ側(api/chat)で固定 */
           system:`あなたはRPGゲームの仲間キャラ「クロード」です。プレイヤーはWebディレクター（CLI初心者）です。
 【ミッション】${step.briefing}
 【期待するコマンド】${step.expect}${step.matchType==="startsWith"?"（この後に続きがあってもOK）":"（完全一致）"}
